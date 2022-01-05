@@ -1,0 +1,45 @@
+# ignore netbeans specific stuff
+nbproject
+
+# Can we agree to install binstubs as `bundle install --binstubs=b`?
+b/
+
+# ignore Rubymine
+.idea
+
+.rvmrc
+.bundle
+/tmp/
+/db/
+/pkg/
+/doc
+/target/
+/neo4j/
+/example/blog/neo4j-db
+/example/blog/log
+.yardoc
+# jedit
+*~
+.ruby-version
+.ruby-gemset
+.jrubyrc
+
+# vim
+.*.sw[a-z]
+
+Gemfile.lock
+coverage
+
+docs_site/
+/docs/_build
+/docs/api
+
+# dotenv
+.env
+
+# Mac
+.DS_Store
+
+# Vagrant
+.vagrant/*
+ubuntu*
