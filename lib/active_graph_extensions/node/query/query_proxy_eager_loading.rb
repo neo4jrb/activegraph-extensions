@@ -95,7 +95,7 @@ module ActiveGraphExtensions
         def before_pluck(query)
           return query if skip_order? && !include_with_path_length?
           base_query = query.order(
-            @order_spec.flat_map { |key, order_specs| order_specs.map(&method(:order_clause).curry.call(key)) }
+            (@order_spec || []).flat_map { |key, order_specs| order_specs.map(&method(:order_clause).curry.call(key)) }
           )
           query_from_chain(@postponed_chain, base_query, identity)
         end
@@ -130,7 +130,7 @@ module ActiveGraphExtensions
         end
 
         def perform_query
-          @_cache = IdentityMap.new
+          @_cache = ActiveGraph::Node::Query::QueryProxyEagerLoading::IdentityMap.new
           build_query
             .map do |record, eager_data|
             record = cache_and_init(record, with_associations_tree)

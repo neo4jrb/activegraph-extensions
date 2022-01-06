@@ -19,7 +19,7 @@ module ActiveGraphExtensions
           end
 
           def order_clause_for_query(node_alias)
-            (order = @order_spec[node_alias]) ? order.map(&method(:nested_order_clause).curry.call(node_alias)) : []
+            (order = @order_spec&.fetch(node_alias)) ? order.map(&method(:nested_order_clause).curry.call(node_alias)) : []
           end
 
           def nested_order_clause(node_alias, order_spec)
