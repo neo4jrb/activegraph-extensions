@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-module ActiveGraphEstensions
+module ActiveGraphExtensions
   module StringParsers
-    # Filtering relationships with length
+    # Parsing relationships with length
     class RelationParser < ::Parslet::Parser
       rule(:asterix)   { str('*') }
       rule(:digit)     { match('[\d]').repeat }

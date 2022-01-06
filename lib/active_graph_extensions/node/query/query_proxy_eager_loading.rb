@@ -29,6 +29,13 @@ module ActiveGraphExtensions
           end
         end
 
+        def with_associations(*spec)
+          new_link.tap do |new_query_proxy|
+            new_query_proxy.with_associations_tree = with_associations_tree.clone
+            new_query_proxy.with_associations_tree.add_spec_and_validate(spec)
+          end
+        end
+
         private
 
         def query_from_association_tree
@@ -134,13 +141,6 @@ module ActiveGraphExtensions
               end
             end
             record
-          end
-        end
-
-        def with_associations(*spec)
-          new_link.tap do |new_query_proxy|
-            new_query_proxy.with_associations_tree = with_associations_tree.clone
-            new_query_proxy.with_associations_tree.add_spec_and_validate(spec)
           end
         end
 
