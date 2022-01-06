@@ -29,11 +29,17 @@ DESCRIPTION
   s.add_dependency('parslet')
   s.add_dependency('activegraph')
   
+  s.add_development_dependency('guard')
+  s.add_development_dependency('guard-rspec')
+  s.add_development_dependency('guard-rubocop')
   s.add_development_dependency('neo4j-rake_tasks', '>= 0.3.0')
+  # s.add_development_dependency("neo4j-#{ENV['driver'] == 'java' ? 'java' : 'ruby'}-driver", '~> 4.1.0.beta.1')
+  s.add_development_dependency('os')
   s.add_development_dependency('pry')
   s.add_development_dependency('railties', '>= 4.0')
   s.add_development_dependency('rake')
   s.add_development_dependency('rubocop', '>= 0.56.0')
+  s.add_development_dependency('yard')
   s.add_development_dependency('dryspec')
   s.add_development_dependency('rspec', '< 3.10') # Cannot proxy frozen objects
 end
