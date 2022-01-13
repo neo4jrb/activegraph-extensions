@@ -57,7 +57,6 @@ module ActiveGraphExtensions
 
         def optional_match_with_where(query, path, vars)
           computed_query = super
-
           computed_query = limit_node_in_where_clause(computed_query, path) if multipath_with_sideload_limit?(path)
           skip_order? && !path.last.rel_length ? computed_query : optional_order(computed_query, path, vars)
         end
@@ -144,17 +143,17 @@ module ActiveGraphExtensions
           end
         end
 
-        def with_association_query_part(base_query, path, previous_with_vars)
-          optional_match_with_where(base_query, path, previous_with_vars)
-            .with(identity,
-                  "collect([#{relationship_collection(path)}, #{escape path_name(path)}]) "\
-                  "AS #{escape("#{path_name(path)}_collection")}",
-                  *previous_with_vars)
-        end
+        # def with_association_query_part(base_query, path, previous_with_vars)
+        #   optional_match_with_where(base_query, path, previous_with_vars)
+        #     .with(identity,
+        #           "collect([#{relationship_collection(path)}, #{escape path_name(path)}]) "\
+        #           "AS #{escape("#{path_name(path)}_collection")}",
+        #           *previous_with_vars)
+        # end
 
-        def relationship_collection(path)
-          path.last.rel_length ? "last(relationships(#{escape("#{path_name(path)}_path")}))" : escape("#{path_name(path)}_rel")
-        end
+        # def relationship_collection(path)
+        #   path.last.rel_length ? "last(relationships(#{escape("#{path_name(path)}_path")}))" : escape("#{path_name(path)}_rel")
+        # end
       end
     end
   end

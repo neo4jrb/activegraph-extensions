@@ -13,18 +13,18 @@ module ActiveGraphExtensions
 
           def rel_collection_str(path)
             limit = association_limit(path)
-            "[#{relationship_collection(path, limit)}, "\
-            "#{convert_to_list(escape(path_name(path)), limit)}] "\
-            "AS #{escape("#{path_name(path)}_collection")}"
+            collection_name = "[#{relationship_name(path)}, #{escape(path_name(path))}] "
+            collection = limit.present? ? "apoc.agg.slice(#{collection_name}, 0, #{limit})" : "collect(#{collection_name})"
+            "#{collection} AS #{escape("#{path_name(path)}_collection")}"
           end
 
-          def relationship_collection(path, limit)
-            collection_name = if path.last.rel_length
-                                "last(relationships(#{escape("#{path_name(path)}_path")}))"
-                              else
-                                escape("#{path_name(path)}_rel")
-                              end
-            convert_to_list(collection_name, limit)
+          def relationship_name(path)
+          if path.last.rel_length
+            "last(relationships(#{escape("#{path_name(path)}_path")}))"
+          else
+            escape("#{path_name(path)}_rel")
+          end
+
           end
 
           def convert_to_list(collection_name, limit)

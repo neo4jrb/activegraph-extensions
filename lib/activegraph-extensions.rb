@@ -3,7 +3,7 @@ require 'parslet'
 
 loader = Zeitwerk::Loader.for_gem
 loader.inflector.inflect 'version' => 'VERSION'
-loader.ignore(File.expand_path('graphiti-activegraph.rb', __dir__))
+loader.ignore(File.expand_path('activegraph-extensions.rb', __dir__))
 loader.setup
 
 module ActiveGraphExtensions
