@@ -100,7 +100,7 @@ module ActiveGraphExtensions
         end
 
         def node_aliase_for_collection(key, order_spec)
-          "#{var(key, :collection, &:itself)}[#{self.class.rel?(order_spec)}][0]" if key.present?
+          "#{var(key, :collection, &:itself)}[0][#{self.class.rel?(order_spec)}]" if key.present?
         end
 
         def node_aliase_for_order(property_with_direction)

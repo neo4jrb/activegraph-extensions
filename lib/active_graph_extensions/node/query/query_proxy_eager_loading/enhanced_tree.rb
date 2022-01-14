@@ -41,8 +41,7 @@ module ActiveGraphExtensions
             # length = { max: length } if length
             #add_nested(k.to_sym, rest, length, association_limit)
             map = StringParsers::RelationParser.new.parse(str)
-            #binding.pry
-            add_nested(map[:rel_name].to_sym, map[:rest_str].to_s.presence, map[:length_part], map[:limit])
+            add_nested(map[:rel_name].to_sym, map[:rest_str].to_s.presence, map[:length_part], map[:limit_digit])
           end
 
           # def extract_assoc_limit(str)
