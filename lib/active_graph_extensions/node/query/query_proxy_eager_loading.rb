@@ -142,18 +142,6 @@ module ActiveGraphExtensions
             record
           end
         end
-
-        # def with_association_query_part(base_query, path, previous_with_vars)
-        #   optional_match_with_where(base_query, path, previous_with_vars)
-        #     .with(identity,
-        #           "collect([#{relationship_collection(path)}, #{escape path_name(path)}]) "\
-        #           "AS #{escape("#{path_name(path)}_collection")}",
-        #           *previous_with_vars)
-        # end
-
-        # def relationship_collection(path)
-        #   path.last.rel_length ? "last(relationships(#{escape("#{path_name(path)}_path")}))" : escape("#{path_name(path)}_rel")
-        # end
       end
     end
   end
