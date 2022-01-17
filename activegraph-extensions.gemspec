@@ -19,7 +19,7 @@ Gem::Specification.new do |s|
 DESCRIPTION
 
   s.require_path = 'lib'
-  s.files = Dir.glob('{bin,lib,config}/**/*') + %w(README.md CHANGELOG.md CONTRIBUTORS Gemfile activegraph-extensions.gemspec)
+  s.files = Dir.glob('{bin,lib,config}/**/*') + %w(README.md CHANGELOG.md Gemfile activegraph-extensions.gemspec)
   s.executables = []
   s.extra_rdoc_files = %w( README.md )
   s.rdoc_options = ['--quiet', '--title', 'Neo4j.rb', '--line-numbers', '--main', 'README.rdoc', '--inline-source']
