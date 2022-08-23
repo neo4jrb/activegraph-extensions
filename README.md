@@ -1,1 +1,1 @@
-# Extensions to activegraph gem. 
+# Extensions to activegraph gem.
