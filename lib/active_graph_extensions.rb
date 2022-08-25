@@ -1,6 +1,9 @@
 require 'active_graph'
 require 'parslet'
 
+module ActiveGraphExtensions
+end
+
 Zeitwerk::Loader.for_gem.setup
 
 ActiveGraph::Node::Query::QueryProxy.include ActiveGraphExtensions::Node::Query::QueryProxyEagerLoading
