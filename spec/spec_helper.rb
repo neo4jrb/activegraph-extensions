@@ -29,7 +29,7 @@ require 'logger'
 
 require 'active_graph/core'
 require 'active_graph'
-require 'activegraph-extensions'
+require 'active_graph_extensions'
 require 'unique_class'
 
 require 'pry'
