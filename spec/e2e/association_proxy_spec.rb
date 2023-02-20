@@ -104,15 +104,15 @@ describe 'Association Proxy' do
     end
 
     context 'authorozed scope' do
-      let(:parent1) { Person.create(name: 'P1', active: 'true') }
-      let!(:child_1_1) { Person.create(name: 'P1-C1', parent: parent1, role: role, active: 'true') }
-      let!(:child_1_2) { Person.create(name: 'P1-C2', parent: parent1, role: role, active: 'false') }
+      let(:parent) { Person.create(name: 'P1', active: 'true') }
+      let!(:child_1_1) { Person.create(name: 'P1-C1', parent: parent, role: role, active: 'true') }
+      let!(:child_1_2) { Person.create(name: 'P1-C2', parent: parent, role: role, active: 'false') }
       let(:role) { Role.create(name: 'Sceintist') }
       
       it 'returns authorozed persons' do
         Person.where(id: child_1_1.id).with_ordered_associations('role.persons.parent',
           {}, {active: 'true', default_assoc_limit: 1000}).each do |person|
-          binding.pry
+          expect(person.role.persons.parent.first).to eq(parent)
         end
       end      
     end

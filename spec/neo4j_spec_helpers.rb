@@ -39,8 +39,8 @@ module Neo4jSpecHelpers
 
   def log_queries!
     ActiveGraph::Base.subscribe_to_query do |message|
-          puts message
-        end
+      puts message
+    end
   end
 
   class_methods do
