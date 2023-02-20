@@ -57,7 +57,7 @@ module ActiveGraphExtensions
 
         def optional_match_with_where(query, path, vars)
           computed_query = super
-          computed_query = limit_node_in_where_clause(computed_query, path) if multipath_with_sideload_limit?(path)
+          computed_query = limit_node_in_where_clause(computed_query, path) if multipath?(path)
           skip_order? && !path.last.rel_length ? computed_query : optional_order(computed_query, path, vars)
         end
 

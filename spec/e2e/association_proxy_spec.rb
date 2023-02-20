@@ -8,6 +8,7 @@ describe 'Association Proxy' do
     before do
       stub_node_class('Person') do
         property :name
+        property :active
 
         has_many :out, :knows, model_class: 'Person', type: nil
         has_many :in, :posts, type: :posts
@@ -15,6 +16,7 @@ describe 'Association Proxy' do
         has_one :out, :parent, type: :parent, model_class: 'Person', dependent: :delete
         has_many :in, :children, origin: :parent, model_class: 'Person'
         has_many :out, :owner_comments, type: :comments, model_class: 'Comment'
+        has_one :out, :role, type: :role
       end
 
       stub_node_class('Post') do
@@ -30,6 +32,16 @@ describe 'Association Proxy' do
         has_one :out, :owner, origin: :comments, model_class: 'Person'
         has_one :in, :comment_owner, origin: :owner_comments, model_class: 'Person'
         has_one :out, :post, origin: :comments, model_class: 'Post'
+      end
+
+      stub_node_class('Role') do
+        property :name
+
+        has_many :in, :persons, origin: :role
+
+        scope :authorized_persons, lambda { |var = nil, rel_var = nil, opts = {}|
+          persons(var, rel_var, rel_length: opts[:rel_length]).where(active: opts[:active])
+        }
       end
     end
 
@@ -89,6 +101,20 @@ describe 'Association Proxy' do
           end
         end
       end
+    end
+
+    context 'authorozed scope' do
+      let(:parent1) { Person.create(name: 'P1', active: 'true') }
+      let!(:child_1_1) { Person.create(name: 'P1-C1', parent: parent1, role: role, active: 'true') }
+      let!(:child_1_2) { Person.create(name: 'P1-C2', parent: parent1, role: role, active: 'false') }
+      let(:role) { Role.create(name: 'Sceintist') }
+      
+      it 'returns authorozed persons' do
+        Person.where(id: child_1_1.id).with_ordered_associations('role.persons.parent',
+          {}, {active: 'true', default_assoc_limit: 1000}).each do |person|
+          binding.pry
+        end
+      end      
     end
   end
 end

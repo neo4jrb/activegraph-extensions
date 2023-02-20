@@ -37,6 +37,12 @@ module Neo4jSpecHelpers
     ActionController::Parameters.new(args)
   end
 
+  def log_queries!
+    ActiveGraph::Base.subscribe_to_query do |message|
+          puts message
+        end
+  end
+
   class_methods do
     def let_config(var_name, value)
       around do |example|

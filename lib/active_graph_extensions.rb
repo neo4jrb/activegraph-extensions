@@ -2,6 +2,12 @@ require 'active_graph'
 require 'parslet'
 
 module ActiveGraphExtensions
+	module Node
+		module Query
+		end
+	end
+	module StringParsers
+	end
 end
 
 Zeitwerk::Loader.for_gem.setup

@@ -40,7 +40,7 @@ module ActiveGraphExtensions
             # k, length = head.split('*', -2)
             # length = { max: length } if length
             #add_nested(k.to_sym, rest, length, association_limit)
-            map = StringParsers::RelationParser.new.parse(str)
+            map = ActiveGraphExtensions::StringParsers::RelationParser.new.parse(str)
             add_nested(map[:rel_name].to_sym, map[:rest_str].to_s.presence, map[:length_part], map[:limit_digit])
           end
 

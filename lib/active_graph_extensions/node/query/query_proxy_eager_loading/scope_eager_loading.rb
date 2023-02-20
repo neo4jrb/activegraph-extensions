@@ -10,10 +10,8 @@ module ActiveGraphExtensions
             rel_model = relationship_model(path)
             return {} if @opts.blank? || !(auth_scope = authorized_scope(rel_model, path))
             conf = { rels: [], chain: {} }
-            proxy = auth_scope.call(var, "#{var}_rel", user: @opts[:user],
-                                                       properties: properties_for(rel_model),
-                                                       privileges: @opts[:privileges],
-                                                       rel_length: path.last.rel_length)
+            proxy = auth_scope.call(var, "#{var}_rel", @opts.merge(properties: properties_for(rel_model),
+                                                                   rel_length: path.last.rel_length))
             proxy_rel_parts(proxy.instance_variable_get(:@break_proxy) || proxy, conf)
             conf
           end
