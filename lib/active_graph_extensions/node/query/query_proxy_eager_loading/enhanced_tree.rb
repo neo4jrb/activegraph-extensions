@@ -35,19 +35,9 @@ module ActiveGraphExtensions
           end
 
           def process_string(str)
-            # head, rest = str.split('.', 2)
-            # head, association_limit = extract_assoc_limit(head)
-            # k, length = head.split('*', -2)
-            # length = { max: length } if length
-            #add_nested(k.to_sym, rest, length, association_limit)
-            map = ActiveGraphExtensions::StringParsers::RelationParser.new.parse(str)
+            map = StringParsers::RelationParser.new.parse(str)
             add_nested(map[:rel_name].to_sym, map[:rest_str].to_s.presence, map[:length_part], map[:limit_digit])
           end
-
-          # def extract_assoc_limit(str)
-          #   transformer = StringParsers::RelationParamTransformer.new(str)
-          #   [transformer.rel_name_n_length, transformer.rel_limit_number]
-          # end
 
           def process_hash(spec)
             spec = spec.dup
