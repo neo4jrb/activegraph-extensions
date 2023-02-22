@@ -103,7 +103,7 @@ describe 'Association Proxy' do
       end
     end
 
-    context 'authorozed scope' do
+    context 'authorized scope' do
       let(:parent) { Person.create(name: 'P1', active: 'true') }
       let!(:child_1_1) { Person.create(name: 'P1-C1', parent: parent, role: role, active: 'true') }
       let!(:child_1_2) { Person.create(name: 'P1-C2', parent: parent, role: role, active: 'false') }
