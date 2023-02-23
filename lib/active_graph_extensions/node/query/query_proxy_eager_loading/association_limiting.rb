@@ -45,8 +45,9 @@ module ActiveGraphExtensions
           end
 
           def limit_node_in_where_clause(query, path)
-            root_path = path[0..0]
-            query.where("`#{path_name(root_path)}` in [i IN #{node_from_collection(root_path)} | i[1]]")
+            (path.length - 1).times.inject(query) do |query_with_where, index|
+              query_with_where.where("`#{path_name(path[0..index])}` in [i IN #{node_from_collection(path[0..index])} | i[1]]")
+            end
           end
 
           def node_from_collection(path_step)
