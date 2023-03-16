@@ -36,7 +36,7 @@ module ActiveGraphExtensions
 
           def association_limit(path)
             limit = path.last&.association_limit
-            limit.blank? || limit.to_i > default_assoc_limit ? default_assoc_limit : limit
+            limit.blank? || limit.to_i > max_page_size ? max_page_size : limit
           end
 
           def with_association_query_part(base_query, path, previous_with_vars)
