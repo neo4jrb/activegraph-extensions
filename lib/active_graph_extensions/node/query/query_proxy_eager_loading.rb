@@ -12,7 +12,8 @@ module ActiveGraphExtensions
         end
 
         def with_ordered_associations(spec, order, opts = {})
-          @default_assoc_limit = opts[:default_assoc_limit]
+          @max_page_size = opts[:max_page_size]
+          @paginate = opts[:paginate]
           @with_vars = opts[:with_vars]
           @order_spec = order.with_indifferent_access unless spec.empty?
           @opts = opts
