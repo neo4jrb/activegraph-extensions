@@ -6,25 +6,28 @@ module ActiveGraphExtensions
       module QueryProxyEagerLoading
         module AssociationLimiting
           def self.included(base)
-            base.attr_reader(:default_assoc_limit)
+            base.attr_reader(:max_page_size)
+            base.attr_reader(:paginate)
           end
 
           private
 
           def rel_collection_str(path)
-            limit = association_limit(path)
             collection_name = "[#{relationship_name(path)}, #{escape(path_name(path))}] "
-            collection = limit.present? ? "apoc.agg.slice(#{collection_name}, 0, #{limit})" : "collect(#{collection_name})"
+            collection = apply_limit?(path) ? "apoc.agg.slice(#{collection_name}, 0, #{association_limit(path)})" : "collect(#{collection_name})"
             "#{collection} AS #{escape("#{path_name(path)}_collection")}"
           end
 
-          def relationship_name(path)
-          if path.last.rel_length
-            "last(relationships(#{escape("#{path_name(path)}_path")}))"
-          else
-            escape("#{path_name(path)}_rel")
+          def apply_limit?(path)
+            !multipath?(path) && (path.last&.association_limit || paginate)
           end
 
+          def relationship_name(path)
+            if path.last.rel_length
+              "last(relationships(#{escape("#{path_name(path)}_path")}))"
+            else
+              escape("#{path_name(path)}_rel")
+            end
           end
 
           def convert_to_list(collection_name, limit)
@@ -32,10 +35,8 @@ module ActiveGraphExtensions
           end
 
           def association_limit(path)
-            return if multipath?(path)
-
             limit = path.last&.association_limit
-            limit.blank? || limit.to_i > default_assoc_limit ? default_assoc_limit : limit
+            limit.blank? || limit.to_i > max_page_size ? max_page_size : limit
           end
 
           def with_association_query_part(base_query, path, previous_with_vars)
