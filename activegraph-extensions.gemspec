@@ -25,7 +25,7 @@ DESCRIPTION
   s.rdoc_options = ['--quiet', '--title', 'Neo4j.rb', '--line-numbers', '--main', 'README.rdoc', '--inline-source']
 
   s.add_dependency('parslet')
-  s.add_dependency('activegraph')
+  s.add_dependency('activegraph', '>= 12.0.0.beta.5')
   
   s.add_development_dependency('guard')
   s.add_development_dependency('guard-rspec')
