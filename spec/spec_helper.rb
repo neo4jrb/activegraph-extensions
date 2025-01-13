@@ -27,8 +27,6 @@ require 'fileutils'
 require 'tmpdir'
 require 'logger'
 
-require 'active_graph/core'
-require 'active_graph'
 require 'active_graph_extensions'
 require 'unique_class'
 
@@ -156,7 +154,7 @@ module ActiveNodeRelStubHelpers
   end
 
   def create_constraint(label_name, property, options = {})
-    ActiveGraph::Base.label_object(label_name).create_constraint(property, options)
+    ActiveGraph::Base.label_object(label_name).create_constraint(property, **options)
     ActiveGraph::ModelSchema.reload_models_data!
   end
 

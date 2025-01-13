@@ -24,8 +24,6 @@ DESCRIPTION
   s.extra_rdoc_files = %w( README.md )
   s.rdoc_options = ['--quiet', '--title', 'Neo4j.rb', '--line-numbers', '--main', 'README.rdoc', '--inline-source']
 
-  s.platform = 'java'
-
   s.add_dependency('parslet')
   s.add_dependency('activegraph')
   

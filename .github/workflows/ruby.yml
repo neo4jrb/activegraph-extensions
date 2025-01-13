@@ -20,13 +20,12 @@ jobs:
   test:
 
     runs-on: ubuntu-latest
-    continue-on-error: ${{ matrix.ruby == 'ruby' }}
     timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
-        ruby: [ jruby-9.4.1.0]
-        neo4j: [ 4.4.17, 5.4.0 ]
+        ruby: [ ruby, jruby ]
+        neo4j: [ 4.4.39, 5.26.0 ]
     env:
       NEO4J_VERSION: ${{ matrix.neo4j }}
       JRUBY_OPTS: --debug -J-Xmx1280m -Xcompile.invokedynamic=false -J-XX:+TieredCompilation -J-XX:TieredStopAtLevel=1 -J-noverify -Xcompile.mode=OFF
