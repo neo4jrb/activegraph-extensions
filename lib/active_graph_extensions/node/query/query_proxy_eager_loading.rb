@@ -41,15 +41,50 @@ module ActiveGraphExtensions
 
         def query_from_association_tree
           previous_with_vars = defalut_previous_with_vars
-          with_associations_tree.paths.inject(query_as(identity).with(base_query_with_vars)) do |query, path|
-            with_association_query_part(query, path, previous_with_vars).tap do
-              previous_with_vars << var_fix(path_name(path), :collection)
-            end
+
+          sorted_association_paths.inject(query_as(identity).with(base_query_with_vars)) do |query, path|
+            result = with_association_query_part(query, path, previous_with_vars)
+            previous_with_vars << var_fix(path_name(path), :collection)
+            path_name(path) == @early_pagination_path ? apply_early_order_skip_limit(result) : result
           end
         end
 
         def defalut_previous_with_vars
           @with_vars&.dup || []
+        end
+
+        def sorted_association_paths
+          return with_associations_tree.paths if skip_order?
+
+          priority, remaining = priority_paths
+          @early_pagination_path = find_early_pagination_path(priority)
+          priority + remaining
+        end
+
+        def find_early_pagination_path(priority)
+          return nil if skip_order? || priority.blank?
+
+          path_name(priority.last)
+        end
+
+        def priority_paths
+          ordered_names = path_names.select { |name| order_clause_for_query(name).present? }
+
+          with_associations_tree.paths.partition do |path|
+            name = path_name(path)
+            ordered_names.any? { |ordered_name| ordered_name == name || ordered_name.start_with?("#{name}.") }
+          end
+        end
+
+        def apply_early_order_skip_limit(query)
+          @pagination_applied = true
+          query_from_chain(@postponed_chain, apply_order_from_spec(query), identity).break
+        end
+
+        def apply_order_from_spec(query)
+          query.order(
+            (@order_spec || []).flat_map { |key, order_specs| order_specs.map(&method(:order_clause).curry.call(key)) }
+          )
         end
 
         def base_query_with_vars
@@ -93,11 +128,11 @@ module ActiveGraphExtensions
         end
 
         def before_pluck(query)
-          return query if skip_order? && !include_with_path_length?
-          base_query = query.order(
-            (@order_spec || []).flat_map { |key, order_specs| order_specs.map(&method(:order_clause).curry.call(key)) }
-          )
-          query_from_chain(@postponed_chain, base_query, identity)
+          return query if (skip_order? || @pagination_applied) && !include_with_path_length?
+
+          base_query = apply_order_from_spec(query)
+          remaining_chain = @pagination_applied ? @postponed_chain.select { |link| link.clause == :order } : @postponed_chain
+          query_from_chain(remaining_chain, base_query, identity)
         end
 
         def node_aliase_for_collection(key, order_spec)
@@ -119,7 +154,7 @@ module ActiveGraphExtensions
         CLAUSES_TO_POSTPONE = %i[limit order skip].freeze
 
         def include_with_path_length?(path = @with_associations_tree)
-          path.present? && (path.rel_length.present? || path.any? { |_, val| include_with_path_length?(val) })
+          !path.nil? && (path.rel_length.present? || path.any? { |_, val| include_with_path_length?(val) })
         end
 
         def chain
