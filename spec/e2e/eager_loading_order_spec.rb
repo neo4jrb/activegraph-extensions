@@ -3,7 +3,6 @@ require 'spec_helper'
 describe 'Eager Loading with Ordering' do
   before do
     clear_model_memory_caches
-    log_queries!
   end
 
   before do
@@ -98,7 +97,7 @@ describe 'Eager Loading with Ordering' do
         end
       end
 
-      it 'returns correct nested data' do #TODO: not sure if this is needed
+      it 'returns correct nested data' do
         results = Person.all.with_ordered_associations('posts.comments', { 'posts' => ['name'] }).to_a
 
         alice_result = results.find { |p| p.name == 'Alice' }
