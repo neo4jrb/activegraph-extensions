@@ -65,11 +65,11 @@ describe 'Eager Loading with Ordering' do
     let!(:charlie) { Person.create(name: 'Charlie') }
 
     let!(:post_alice) { Post.create(name: 'Zebra', owner: alice) }
-    let!(:post_alice2) { Post.create(name: 'Yacht', owner: alice) }
     let!(:post_bob) { Post.create(name: 'Apple', owner: bob) }
     let!(:post_charlie) { Post.create(name: 'Mango', owner: charlie) }
 
     context 'single sideload' do
+      let!(:post_alice2) { Post.create(name: 'Yacht', owner: alice) }
       it 'loads associations in a single query' do
         expect_queries(1) do
           Person.all.with_ordered_associations('posts', { 'posts' => ['name'] }).map(&:posts)
