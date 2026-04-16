@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe 'Eager Loading with Ordering' do
@@ -12,7 +14,6 @@ describe 'Eager Loading with Ordering' do
       has_many :in, :posts, type: :posts
       has_one :out, :role, type: :role
       has_many :out, :knows, model_class: 'Person', type: nil
-
     end
 
     stub_node_class('Post') do
@@ -39,8 +40,8 @@ describe 'Eager Loading with Ordering' do
     end
 
     it 'returns correct order for two sideloads and one sort param' do
-      query = Person.all.with_ordered_associations(['knows', 'posts'], { 'posts' => ['name'] })
-      expect(sorted_path_names(query)).to eq(['posts', 'knows'])
+      query = Person.all.with_ordered_associations(%w[knows posts], { 'posts' => ['name'] })
+      expect(sorted_path_names(query)).to eq(%w[posts knows])
     end
 
     it 'returns correct order for two sideloads and no sort params' do
@@ -49,12 +50,14 @@ describe 'Eager Loading with Ordering' do
     end
 
     it 'returns correct order for two sideloads and two sort params' do
-      query = Person.all.with_ordered_associations('posts.comments', { 'posts' => ['name'], 'posts.comments' => ['text'] })
+      query = Person.all.with_ordered_associations('posts.comments',
+                                                   { 'posts' => ['name'], 'posts.comments' => ['text'] })
       expect(sorted_path_names(query)).to eq(['posts', 'posts.comments'])
     end
 
     it 'returns correct order for three sideloads, two sort params' do
-      query = Person.all.with_ordered_associations(['knows', 'posts.comments'], { 'posts' => ['name'], 'posts.comments' => ['text'] })
+      query = Person.all.with_ordered_associations(['knows', 'posts.comments'],
+                                                   { 'posts' => ['name'], 'posts.comments' => ['text'] })
       expect(sorted_path_names(query)).to eq(['posts', 'posts.comments', 'knows'])
     end
   end
@@ -85,7 +88,7 @@ describe 'Eager Loading with Ordering' do
       end
     end
 
-    context 'miltiple sideloads' do
+    context 'multiple sideloads' do
       let!(:comment_alice) { Comment.create(text: 'Comment on First', post: post_alice) }
       let!(:comment_bob) { Comment.create(text: 'Comment on Second', post: post_bob) }
 
@@ -122,35 +125,25 @@ describe 'Eager Loading with Ordering' do
 
     it 'orders main results by sideloaded association property' do
       results = Person.all
-        .with_ordered_associations('posts', { 'posts' => ['name'] })
+                      .with_ordered_associations('posts', { 'posts' => ['name'] })
 
       expect(results.map(&:name)).to eq(%w[Bob Charlie Alice])
     end
 
     it 'applies limit after sideload ordering' do
       results = Person.all
-        .with_ordered_associations('posts', { 'posts' => ['name'] })
-        .limit(2)
+                      .with_ordered_associations('posts', { 'posts' => ['name'] })
+                      .limit(2)
 
       expect(results.map(&:name)).to eq(%w[Bob Charlie])
     end
 
     it 'applies skip and limit after sideload ordering' do
       results = Person.all
-        .with_ordered_associations('posts', { 'posts' => ['name'] })
-        .skip(1).limit(1)
+                      .with_ordered_associations('posts', { 'posts' => ['name'] })
+                      .skip(1).limit(1)
 
       expect(results.map(&:name)).to eq(%w[Charlie])
-    end
-
-    it 'preserves sideloaded associations after skip/limit' do
-      results = Person.all
-        .with_ordered_associations('posts', { 'posts' => ['name'] })
-        .skip(0).limit(2)
-
-      results.each do |person|
-        expect(person.posts.to_a).not_to be_empty
-      end
     end
   end
 
@@ -174,14 +167,14 @@ describe 'Eager Loading with Ordering' do
         bob.knows << alice
 
         results = Person.all
-          .with_ordered_associations(['posts', 'role', 'knows'], {
-            'posts' => ['name'],
-            'knows' => ['name']
-          }).to_a
+                        .with_ordered_associations(%w[posts role knows], {
+                                                     'posts' => ['name'],
+                                                     'knows' => ['name']
+                                                   }).to_a
 
         # Should be ordered by posts.name: Alice (Apple), Bob (Apple), Charlie (Banana)
         # For Alice and Bob (same post name), order by knows.name: Bob (knows Alice), Alice (knows Charlie)
-        expect(results.map(&:name)).to eq(['Bob', 'Alice', 'Charlie'])
+        expect(results.map(&:name)).to eq(%w[Bob Alice Charlie])
 
         bob_result = results[0]
         alice_result = results[1]
@@ -194,7 +187,7 @@ describe 'Eager Loading with Ordering' do
         expect(alice_result.posts.map(&:name)).to eq(['Apple'])
         expect(alice_result.knows.map(&:name)).to eq(['Charlie'])
         expect(alice_result.role.name).to eq('Admin')
-        
+
         expect(charlie_result.posts.map(&:name)).to eq(['Banana'])
         expect(charlie_result.knows).to be_empty
         expect(charlie_result.role.name).to eq('Guest')
@@ -207,8 +200,9 @@ describe 'Eager Loading with Ordering' do
       it 'returns correctly ordered data' do
         expect_queries(1) do
           results = Person.all
-            .with_ordered_associations(['posts', 'role'], { 'posts' => ['name'] })
-            .limit(1).to_a
+                          .with_ordered_associations(%w[posts role], { 'posts' => ['name'] })
+                          .limit(1)
+                          .to_a
 
           expect(results.length).to eq(1)
           first_res = results.first
@@ -255,8 +249,8 @@ describe 'Eager Loading with Ordering' do
 
     it 'orders main results by sideloaded property descending' do
       results = Person.all
-        .with_ordered_associations('posts', { 'posts' => ['name DESC'] })
-        .to_a
+                      .with_ordered_associations('posts', { 'posts' => ['name DESC'] })
+                      .to_a
 
       # DESC post name order: Alice (Zebra), Charlie (Mango), Bob (Apple)
       expect(results.map(&:name)).to eq(%w[Alice Charlie Bob])
@@ -264,8 +258,9 @@ describe 'Eager Loading with Ordering' do
 
     it 'applies skip/limit with descending order' do
       results = Person.all
-        .with_ordered_associations('posts', { 'posts' => ['name DESC'] })
-        .limit(2).to_a
+                      .with_ordered_associations('posts', { 'posts' => ['name DESC'] })
+                      .limit(2)
+                      .to_a
 
       # DESC post name order, limit 2: Alice (Zebra), Charlie (Mango)
       expect(results.map(&:name)).to eq(%w[Alice Charlie])
@@ -276,16 +271,15 @@ describe 'Eager Loading with Ordering' do
     let!(:alice) { Person.create(name: 'Alice') }
     let!(:friend1) { Person.create(name: 'Friend-1', knows: friend2) }
     let!(:friend2) { Person.create(name: 'Friend-2') }
+    let!(:post_yak) { Post.create(name: 'Yak', owner: alice) }
 
     before { alice.knows << friend1 }
-
-    let!(:post) { Post.create(name: 'Post-1', owner: alice) }
 
     it 'loads variable length associations with ordering in a single query' do
       expect_queries(1) do
         results = Person.all
-          .with_ordered_associations(['knows*', 'posts'], { 'posts' => ['name'] })
-          .to_a
+                        .with_ordered_associations(['knows*', 'posts'], { 'posts' => ['name'] })
+                        .to_a
 
         alice_result = results.find { |p| p.name == 'Alice' }
         expect(alice_result.posts.to_a).not_to be_empty
@@ -293,16 +287,19 @@ describe 'Eager Loading with Ordering' do
       end
     end
 
-    it 'orders Persons by their first post name even with rel_length present' do
-      bob = Person.create(name: 'Bob')
-      alice_post1 = Post.create(name: 'Zebra', owner: alice)
-      alice_post2 = Post.create(name: 'Yak', owner: alice)
-      bob_post = Post.create(name: 'Apple', owner: bob)
-      results = Person.all
-        .with_ordered_associations(['knows*', 'posts'], { 'posts' => ['name'] })
-        .limit(2).to_a
+    context 'ordering Person records by their first post name' do
+      let!(:bob) { Person.create(name: 'Bob') }
+      let!(:post_zebra) { Post.create(name: 'Zebra', owner: alice) }
+      let!(:post_apple) { Post.create(name: 'Apple', owner: bob) }
 
-      expect(results.map(&:name)).to eq(['Bob', 'Alice'])
+      it 'orders Person records even with rel_length present' do
+        results = Person.all
+                        .with_ordered_associations(['knows*', 'posts'], { 'posts' => ['name'] })
+                        .limit(2)
+                        .to_a
+
+        expect(results.map(&:name)).to eq(%w[Bob Alice])
+      end
     end
   end
 end

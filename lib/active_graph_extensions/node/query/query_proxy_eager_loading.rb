@@ -56,24 +56,24 @@ module ActiveGraphExtensions
         def sorted_association_paths
           return with_associations_tree.paths if skip_order?
 
-          priority, remaining = priority_paths
+          priority, remaining = sort_paths
           @early_pagination_path = find_early_pagination_path(priority)
           priority + remaining
         end
 
-        def find_early_pagination_path(priority)
-          return nil if skip_order? || priority.blank?
-
-          path_name(priority.last)
-        end
-
-        def priority_paths
+        def sort_paths
           ordered_names = path_names.select { |name| order_clause_for_query(name).present? }
 
           with_associations_tree.paths.partition do |path|
             name = path_name(path)
             ordered_names.any? { |ordered_name| ordered_name == name || ordered_name.start_with?("#{name}.") }
           end
+        end
+
+        def find_early_pagination_path(priority_paths)
+          return nil if skip_order? || priority_paths.blank?
+
+          path_name(priority_paths.last)
         end
 
         def apply_early_order_skip_limit(query)
